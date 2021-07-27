@@ -83,6 +83,16 @@ namespace VideoPlayer
             renderedFrameNum = currFrameNum;
         }
 
+        /// <summary>
+        /// Release all resources for current video
+        /// </summary>
+        public void Close()
+        {
+            Source = null;
+            RenderingBitmap = null;
+            VideoImage.Source = null;
+        }
+
         private int GetFrameNumFromTime(long ms)
         {
             if (ms > lastEndTime)

@@ -178,11 +178,15 @@ namespace VideoPlayer
         /// </summary>
         public void Close()
         {
-            Pause();
-            if (RenderThread != null)
+            lock (this)
             {
-                RenderThread.Abort();
-                RenderThread.Join();
+                Pause();
+                if (RenderThread != null)
+                {
+                    RenderThread.Abort();
+                    RenderThread.Join();
+                }
+                Viewer.Close();
             }
         }
 
