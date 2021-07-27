@@ -33,11 +33,11 @@ namespace VideoPlayerDemo
         }
 
         /// <summary>
-        /// 初始化环境
+        /// Initialising the environment
         /// </summary>
         private void InitEnv()
         {
-            // 判断指令集
+            // Determining the instruction set
             string instructionSet;
             switch (IntPtr.Size)
             {
@@ -51,9 +51,8 @@ namespace VideoPlayerDemo
                     throw new Exception("Unknow CPU instruction set");
             }
 
-            // 配置ffms环境变量
+            // Configuring ffms environment variables
             var ffms2Dir = Path.Combine(Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName), "ffms2");
-            Application.Current.Resources["ffms2Dir"] = ffms2Dir;
             Environment.SetEnvironmentVariable("PATH", Path.Combine(ffms2Dir, instructionSet) + ";" + Environment.GetEnvironmentVariable("PATH"));
         }
 
@@ -61,41 +60,42 @@ namespace VideoPlayerDemo
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            // 创建视频控制器
+            // Creating a video controller
             videoController = new VideoController(this.Viewer);
 
-            // 回放时间更新处理函数
+            // Playback time update processing method
             videoController.TimeUpdatedHander = (double time) =>
             {
-                // 若播放到结尾，则将回放时间设置为 0
+                // If playback reaches the end, set the playback time to 0
                 if (time >= videoController.VideoSource.LastTime)
                 {
                     videoController.PlaybackTime = 0;
                 }
             };
 
-            // 加载视频
+            // Load video
+            string videoPath = "test.mp4";
+
             Task.Factory.StartNew(() =>
             {
-                videoController.Init("test.mp4",
-                (object sender1, double e1) =>
-                {
-                    // 加载进度更新处理函数
-                    Console.WriteLine($"载入中: {e1 * 100:0.00} %");
-                },
-                (object sender1, VideoController.LoadingState e1) =>
-                {
-                    // 加载状态更新处理函数
-                    switch (e1)
-                    {
-                        case VideoController.LoadingState.IndexingFrames:
-                            Console.WriteLine("正在建立视频帧索引...");
-                            break;
-                    }
+                videoController.Init(videoPath,
+                   (object sender1, double e1) =>
+                   {
+                       // Load progress updated handling functions
+                       Console.WriteLine($"Loading: {e1 * 100:0.00} %");
+                   },
+                   (object sender1, VideoController.LoadingState e1) =>
+                   {
+                       // Loading status updated handling method
+                       switch (e1)
+                       {
+                           case VideoController.LoadingState.IndexingFrames:
+                               Console.WriteLine("Building index of video frames...");
+                               break;
+                       }
+                   });
 
-                });
-
-                // 加载完成后，播放视频
+                // Play the video after loading
                 videoController.Play();
             });
         }
