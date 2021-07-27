@@ -1,4 +1,4 @@
-# VideoPlayerDemo
+# VideoPlayer
 
 [简体中文](README_zh-CN.md)
 
@@ -50,7 +50,7 @@ Environment.SetEnvironmentVariable("PATH", Path.Combine(ffms2Dir, instructionSet
 3. Referencing namespaces in the ``Window`` tag within xaml
 
 ```xml
- xmlns:videoplayer="clr-namespace:VideoPlayer"
+xmlns:videoplayer="clr-namespace:VideoPlayer;assembly=VideoPlayer"
 ```
 
 4. Declaring the control in xaml

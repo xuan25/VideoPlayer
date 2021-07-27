@@ -1,4 +1,4 @@
-# VideoPlayerDemo
+# VideoPlayer
 
 [English](README.md)
 
@@ -50,7 +50,7 @@ Environment.SetEnvironmentVariable("PATH", Path.Combine(ffms2Dir, instructionSet
 3. 在 xaml 的 ``Window`` 标签中引用命名空间
 
 ```xml
- xmlns:videoplayer="clr-namespace:VideoPlayer"
+xmlns:videoplayer="clr-namespace:VideoPlayer;assembly=VideoPlayer"
 ```
 
 4. 在 xaml 中声明控件
