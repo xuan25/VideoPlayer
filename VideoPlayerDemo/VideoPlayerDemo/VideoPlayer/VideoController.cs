@@ -102,43 +102,46 @@ namespace VideoPlayer
         /// <param name="statusUpdatedHandler">Handler for loading state update</param>
         public void Init(string filename, EventHandler<double> progressUpdatedHandler, EventHandler<LoadingState> statusUpdatedHandler)
         {
-            progressUpdatedHandler?.Invoke(this, 0);
-            statusUpdatedHandler?.Invoke(this, LoadingState.IndexingFrames);
-
-            // Video
-            FFMSSharp.FFMS2.Initialize();
-
-            FFMSSharp.Indexer indexer = new FFMSSharp.Indexer(filename);
-            FFMSSharp.Index index = indexer.Index();
-            int firstVideoTrackNo = index.GetFirstTrackOfType(FFMSSharp.TrackType.Video);
-            FFMSSharp.VideoSource videosource = index.VideoSource(filename, firstVideoTrackNo, threads: 0, seekMode: FFMSSharp.SeekMode.Aggressive);
-            VideoSource = videosource;
-
-            FFMSSharp.Frame propframe = videosource.GetFrame(0);
-            List<int> pixfmts = new List<int>();
-            pixfmts.Add(FFMSSharp.FFMS2.GetPixelFormat("bgra"));
-            videosource.SetOutputFormat(pixfmts, propframe.EncodedResolution.Width, propframe.EncodedResolution.Height, FFMSSharp.Resizer.Bicubic);
-
-            Viewer.Init(videosource, (object sender1, double e1) =>
+            lock (this)
             {
-                progressUpdatedHandler?.Invoke(this, e1);
-            });
-            progressUpdatedHandler?.Invoke(this, 1);
+                progressUpdatedHandler?.Invoke(this, 0);
+                statusUpdatedHandler?.Invoke(this, LoadingState.IndexingFrames);
 
-            // Playback
-            if (RenderThread != null)
-            {
-                RenderThread.Abort();
+                // Video
+                FFMSSharp.FFMS2.Initialize();
+
+                FFMSSharp.Indexer indexer = new FFMSSharp.Indexer(filename);
+                FFMSSharp.Index index = indexer.Index();
+                int firstVideoTrackNo = index.GetFirstTrackOfType(FFMSSharp.TrackType.Video);
+                FFMSSharp.VideoSource videosource = index.VideoSource(filename, firstVideoTrackNo, threads: 0, seekMode: FFMSSharp.SeekMode.Aggressive);
+                VideoSource = videosource;
+
+                FFMSSharp.Frame propframe = videosource.GetFrame(0);
+                List<int> pixfmts = new List<int>();
+                pixfmts.Add(FFMSSharp.FFMS2.GetPixelFormat("bgra"));
+                videosource.SetOutputFormat(pixfmts, propframe.EncodedResolution.Width, propframe.EncodedResolution.Height, FFMSSharp.Resizer.Bicubic);
+
+                Viewer.Init(videosource, (object sender1, double e1) =>
+                {
+                    progressUpdatedHandler?.Invoke(this, e1);
+                });
+                progressUpdatedHandler?.Invoke(this, 1);
+
+                // Playback
+                if (RenderThread != null)
+                {
+                    RenderThread.Abort();
+                }
+                Thread thread = new Thread(RenderLoop)
+                {
+                    IsBackground = true,
+                    Name = "RenderThread"
+                };
+                RenderThread = thread;
+                thread.Start();
+
+                Inited = true;
             }
-            Thread thread = new Thread(RenderLoop)
-            {
-                IsBackground = true,
-                Name = "RenderThread"
-            };
-            RenderThread = thread;
-            thread.Start();
-
-            Inited = true;
         }
 
         /// <summary>
@@ -146,14 +149,17 @@ namespace VideoPlayer
         /// </summary>
         public void Play()
         {
-            if (!Inited)
+            lock (this)
             {
-                return;
-            }
-            if (!IsPlaying)
-            {
-                IsPlaying = true;
-                Clock.Play();
+                if (!Inited)
+                {
+                    return;
+                }
+                if (!IsPlaying)
+                {
+                    IsPlaying = true;
+                    Clock.Play();
+                }
             }
         }
 
@@ -162,14 +168,17 @@ namespace VideoPlayer
         /// </summary>
         public void Pause()
         {
-            if (!Inited)
+            lock (this)
             {
-                return;
-            }
-            if (IsPlaying)
-            {
-                IsPlaying = false;
-                Clock.Pause();
+                if (!Inited)
+                {
+                    return;
+                }
+                if (IsPlaying)
+                {
+                    IsPlaying = false;
+                    Clock.Pause();
+                }
             }
         }
 
