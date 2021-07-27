@@ -8,7 +8,7 @@ using VideoPlayer.Clocking;
 
 namespace VideoPlayer
 {
-    class VideoController
+    public class VideoController
     {
         
 

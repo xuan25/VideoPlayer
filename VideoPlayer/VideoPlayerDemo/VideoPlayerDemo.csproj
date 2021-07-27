@@ -58,12 +58,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="VideoPlayer\Clocking\MmTimer.cs" />
-    <Compile Include="VideoPlayer\Clocking\PlaybackClock.cs" />
-    <Compile Include="VideoPlayer\VideoController.cs" />
-    <Compile Include="VideoPlayer\VideoViewer.xaml.cs">
-      <DependentUpon>VideoViewer.xaml</DependentUpon>
-    </Compile>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -72,23 +66,10 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="FFMSsharp\AudioSource.cs" />
-    <Compile Include="FFMSsharp\FFMS.cs" />
-    <Compile Include="FFMSsharp\Frame.cs" />
-    <Compile Include="FFMSsharp\FrameInfo.cs" />
-    <Compile Include="FFMSsharp\Index.cs" />
-    <Compile Include="FFMSsharp\Indexer.cs" />
-    <Compile Include="FFMSsharp\Selection.cs" />
-    <Compile Include="FFMSsharp\Track.cs" />
-    <Compile Include="FFMSsharp\VideoSource.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="VideoPlayer\VideoViewer.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -128,6 +109,12 @@
     <Content Include="test.mp4">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\VideoPlayer\VideoPlayer.csproj">
+      <Project>{ef9788bc-2078-4929-b158-f068f732390b}</Project>
+      <Name>VideoPlayer</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
